@@ -120,7 +120,7 @@ public class EmployeeManager {
 
         try {
             preparedStatement = connection.prepareStatement(SQL_INSERT_EMPLOYEE);
-            preparedStatement.setString(1, "%" + inputSearch + "%");
+            preparedStatement.setString(1, "'%" + inputSearch + "%'");
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 int id = resultSet.getInt("employeeId");
