@@ -12,6 +12,12 @@
     <title>Title</title>
 </head>
 <body>
+<a href="add-form.jsp"><button>Add</button></a>
+<form action="employee-servlet">
+    <input type="text" name="searchInput" placeholder="name">
+    <input type="hidden" name="action" value="search">
+    <input type="submit" value="Search">
+</form>
 <table>
     <tr>
         <th>#</th>
@@ -21,7 +27,7 @@
         <th>PhoneNumber</th>
         <th>Salary</th>
         <th>Department</th>
-        <th>Action</th>
+        <th colspan="2">Action</th>
     </tr>
     <c:forEach var="employee" items="${employees}">
         <tr>

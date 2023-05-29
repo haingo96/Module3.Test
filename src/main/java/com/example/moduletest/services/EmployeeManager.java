@@ -15,6 +15,8 @@ public class EmployeeManager {
     private static final String SQL_SELECT_ALL_EMPLOYEE = "SELECT * FROM Employee;";
     private static final String SQL_DELETE_EMPLOYEE_BY_ID = "DELETE FROM Employee WHERE employeeId = ?;";
     private static final String SQL_UPDATE_EMPLOYEE_BY_ID = "UPDATE Employee SET name = ?, email = ?, address = ?, phoneNumber = ?, salary = ?, departmentId = ? WHERE employeeId = ?;";
+    private static final String SQL_INSERT_EMPLOYEE = "INSERT INTO Employee VALUES (NULL, ?, ?, ?, ?, ?, ?);";
+    private static final String SQL_SELECT_EMPLOYEE_BY_NAME = "SELECT name FROM Employee WHERE name LIKE ?;";
 
     public static Connection getConnection() {
         Connection connection;
@@ -83,13 +85,63 @@ public class EmployeeManager {
             preparedStatement = connection.prepareStatement(SQL_UPDATE_EMPLOYEE_BY_ID);
             preparedStatement.setString(1, e.getName());
             preparedStatement.setString(2, e.getEmail());
-            preparedStatement.setString(3, e.getPhoneNumber());
-            preparedStatement.setDouble(4, e.getSalary());
-            preparedStatement.setInt(5, e.getDepartment().getDepartmentId());
-            preparedStatement.setInt(6, e.getEmployeeId());
+            preparedStatement.setString(3, e.getEmail());
+            preparedStatement.setString(4, e.getPhoneNumber());
+            preparedStatement.setDouble(5, e.getSalary());
+            preparedStatement.setInt(6, e.getDepartment().getDepartmentId());
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    public static void addEmployee(Employee e) {
+        Connection connection = getConnection();
+        PreparedStatement preparedStatement;
+
+        try {
+            preparedStatement = connection.prepareStatement(SQL_INSERT_EMPLOYEE);
+            preparedStatement.setString(1, e.getName());
+            preparedStatement.setString(2, e.getEmail());
+            preparedStatement.setString(3, e.getEmail());
+            preparedStatement.setString(4, e.getPhoneNumber());
+            preparedStatement.setDouble(5, e.getSalary());
+            preparedStatement.setInt(6, e.getDepartment().getDepartmentId());
+            preparedStatement.executeUpdate();
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public static List<Employee> searchEmployee(String inputSearch) {
+        Connection connection = getConnection();
+        PreparedStatement preparedStatement;
+        List<Employee> employees = new ArrayList<>();
+
+        try {
+            preparedStatement = connection.prepareStatement(SQL_INSERT_EMPLOYEE);
+            preparedStatement.setString(1, "%" + inputSearch + "%");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                int id = resultSet.getInt("employeeId");
+                String name = resultSet.getString("name");
+                String email = resultSet.getString("email");
+                String address = resultSet.getString("address");
+                String phoneNumber = resultSet.getString("phoneNumber");
+                double salary = resultSet.getDouble("salary");
+
+                int departmentId = resultSet.getInt("departmentId");
+                String departmentName = DepartmentManager.getDepartmentNameById(departmentId);
+
+                Employee employee = new Employee(id, name, email, address, phoneNumber, salary, new Department(departmentId, departmentName));
+
+                employees.add(employee);
+            }
+
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return employees;
     }
 }

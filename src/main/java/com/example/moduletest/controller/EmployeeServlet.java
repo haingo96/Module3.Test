@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet(name = "employeeServlet", value = "employee-servlet")
@@ -28,6 +29,9 @@ public class EmployeeServlet extends HttpServlet {
         }
 
         switch (action) {
+            case "search":
+                searchEmployee(request, response);
+                break;
             case "delete":
                 deleteEmployee(request,response);
                 break;
@@ -40,9 +44,30 @@ public class EmployeeServlet extends HttpServlet {
         }
     }
 
+    private void searchEmployee(HttpServletRequest request, HttpServletResponse response) {
+        String searchInput = request.getParameter("searchInput");
+        List<Employee> employees = new ArrayList<>();
+
+        if (searchInput == "") {
+            displayAllEmployee(request, response);
+        } else {
+            employees = EmployeeManager.searchEmployee(searchInput);
+        }
+
+        request.setAttribute("employees", employees);
+
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher("employee-list.jsp");
+        try {
+            requestDispatcher.forward(request, response);
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void showEditForm(HttpServletRequest request, HttpServletResponse response) {
         int id = Integer.parseInt(request.getParameter("id"));
-
         request.setAttribute("employeeId", id);
 
         RequestDispatcher requestDispatcher = request.getRequestDispatcher("edit-form.jsp");
@@ -84,13 +109,32 @@ public class EmployeeServlet extends HttpServlet {
         }
 
         switch (action) {
-            case "submitForm":
+            case "submitAddForm":
+                addEmployee(request, response);
+                break;
+            case "submitEditForm":
                 editEmployee(request, response);
                 break;
             default:
                 displayAllEmployee(request,response);
                 break;
         }
+    }
+
+    private void addEmployee(HttpServletRequest request, HttpServletResponse response) {
+        String name = request.getParameter("name");
+        String email = request.getParameter("email");
+        String address = request.getParameter("email");
+        String phoneNumber = request.getParameter("phoneNumber");
+        double salary = Double.parseDouble(request.getParameter("salary"));
+
+        int departmentId = Integer.parseInt(request.getParameter("department"));
+        String departmentName = DepartmentManager.getDepartmentNameById(departmentId);
+
+        Employee employee = new Employee(name, email, address, phoneNumber, salary, new Department(departmentId, departmentName));
+        EmployeeManager.addEmployee(employee);
+
+        displayAllEmployee(request, response);
     }
 
     private void editEmployee(HttpServletRequest request, HttpServletResponse response) {

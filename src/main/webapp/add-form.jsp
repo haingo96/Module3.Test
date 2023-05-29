@@ -2,7 +2,7 @@
   Created by IntelliJ IDEA.
   User: ngoho
   Date: 5/29/2023
-  Time: 10:34 AM
+  Time: 11:01 AM
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -15,8 +15,7 @@
   <h2>Edit employee</h2>
   <div>
     Name
-    <input type="hidden" name="action" value="submitEditForm">
-    <input type="hidden" name="id" value="${id}">
+    <input type="hidden" name="action" value="submitAddForm">
     <input type="text" name="name">
   </div>
   <div>
@@ -43,5 +42,7 @@
   </div>
   <input type="submit" value="Submit">
 </form>
+</body>
+</html>
 </body>
 </html>
